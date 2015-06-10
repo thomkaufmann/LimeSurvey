@@ -4140,7 +4140,7 @@
                 foreach ($token as $key => $val)
                 {
                     $this->knownVars["TOKEN:" . strtoupper($key)] = array(
-                        'code' => $anonymized ? '' : $val,
+                        'code' => $val,
                         'jsName_on' => '',
                         'jsName' => '',
                         'readWrite' => 'N',
