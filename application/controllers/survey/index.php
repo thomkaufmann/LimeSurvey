@@ -380,30 +380,47 @@ class index extends CAction {
                     $now = dateShift(date("Y-m-d H:i:s"), "Y-m-d H:i:s", Yii::app()->getConfig("timeadjust"));
                     if($oToken->completed != 'N' && !empty($oToken->completed))// This can not happen (TokenInstance must fix this)
                     {
-                        $sError = gT("This invitation has already been used.");
+                        if (isset($param['newtest']) && $param['newtest'] == "None")
+                        {
+                            $thissurvey = getSurveyInfo($surveyid);;
+                            $sError = $thissurvey['surveyls_endtext'];
+                        } else {
+                            $sError = $clang->gT("You have already completed this evaluation.");
+                        }
                     }
                     elseif(strtotime($now) < strtotime($oToken->validfrom))
                     {
-                        $sError = gT("This invitation is not valid yet.");
+                        $sError = $clang->gT("This invitation is not valid yet.");
                     }
                     elseif(strtotime($now) > strtotime($oToken->validuntil))
                     {
-                        $sError = gT("This invitation is not valid anymore.");
+                        $sError = $clang->gT("This invitation is not valid anymore.");
                     }
                     else // This can not happen
                     {
-                        $sError = gT("This is a controlled survey. You need a valid token to participate.");
+                        $sError = $clang->gT("This is a controlled survey. You need a valid token to participate.");
                     }
                 }
                 else
                 {
-                    $sError = gT("This is a controlled survey. You need a valid token to participate.");
+                    $sError = $clang->gT("This is a controlled survey. You need a valid token to participate.");
                 }
-                $asMessage = array(
-                $sError,
-                gT("We are sorry but you are not allowed to enter this survey."),
-                sprintf(gT("For further information please contact %s"), $thissurvey['adminname']." (<a href='mailto:{$thissurvey['adminemail']}'>"."{$thissurvey['adminemail']}</a>)")
-                );
+                if (isset($param['newtest']) && $param['newtest'] == "None")
+                {
+                    $asMessage = array(
+                    null,
+                    $clang->gT("You have completed your evaluation(s)."),
+                    $sError,
+                    null
+                    );
+                } else {
+                    $asMessage = array(
+                    null,
+                    $clang->gT("We are sorry but you are not allowed to enter this survey."),
+                    $sError,
+                    sprintf($clang->gT("For further information please contact %s"), $thissurvey['adminname']." (<a href='mailto:{$thissurvey['adminemail']}'>"."{$thissurvey['adminemail']}</a>)")
+                    );
+                }
 
                 $this->_niceExit($redata, __LINE__, $thistpl, $asMessage, true);
             }
